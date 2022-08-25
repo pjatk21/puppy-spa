@@ -1,0 +1,7 @@
+mutation LoginGoogle($code: String!) {
+  oauth2 {
+    google(code: $code) {
+      token
+    }
+  }
+}

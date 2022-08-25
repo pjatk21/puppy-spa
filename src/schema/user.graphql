@@ -1,0 +1,11 @@
+query Me {
+  me {
+    name
+    email
+    groups
+  }
+}
+
+mutation SetGroups($groups: [String!]!) {
+  setGroups(groups: $groups)
+}
