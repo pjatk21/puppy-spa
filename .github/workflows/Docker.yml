@@ -33,4 +33,4 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           build-args: |
-            VITE_GOOGLE_CLIENTID="${{ secrets.PUPPY_GOOGLE_CLIENTID }}"
+            VITE_GOOGLE_CLIENTID=${{ secrets.PUPPY_GOOGLE_CLIENTID }}
