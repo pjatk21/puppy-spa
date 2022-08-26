@@ -1,5 +1,7 @@
 FROM node:18 AS builder
 
+ARG VITE_GOOGLE_CLIENTID
+
 WORKDIR /app/puppy-spa
 
 COPY package.json yarn.lock ./
@@ -12,4 +14,6 @@ RUN yarn build
 
 FROM scratch AS package
 
-COPY --from=builder /app/puppy-spa/dist /dist
+WORKDIR /app/puppy-spa
+
+COPY --from=builder /app/puppy-spa/dist ./dist
