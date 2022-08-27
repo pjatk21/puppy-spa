@@ -4,5 +4,10 @@ import tsConfigPaths from 'vite-tsconfig-paths'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react(), tsConfigPaths()]
+  plugins: [react(), tsConfigPaths()],
+  server: {
+    proxy: {
+      '/graphql': 'http://localhost:3000/graphql',
+    },
+  },
 })
