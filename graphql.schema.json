@@ -1307,19 +1307,19 @@
           },
           {
             "name": "REJECTED",
-            "description": "All available scrappers rejected task execution.",
+            "description": "All available scrapers rejected task execution.",
             "isDeprecated": false,
             "deprecationReason": null
           },
           {
             "name": "RUNNING",
-            "description": "Task is being executed by a scrapper.",
+            "description": "Task is being executed by a scraper.",
             "isDeprecated": false,
             "deprecationReason": null
           },
           {
             "name": "WAITING",
-            "description": "Task is looking for a scrapper that can execute it.",
+            "description": "Task is looking for a scraper that can execute it.",
             "isDeprecated": false,
             "deprecationReason": null
           }

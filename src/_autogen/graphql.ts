@@ -199,11 +199,11 @@ export type Subscription = {
 export enum TaskState {
   /** Task execution finished. */
   Done = 'DONE',
-  /** All available scrappers rejected task execution. */
+  /** All available scrapers rejected task execution. */
   Rejected = 'REJECTED',
-  /** Task is being executed by a scrapper. */
+  /** Task is being executed by a scraper. */
   Running = 'RUNNING',
-  /** Task is looking for a scrapper that can execute it. */
+  /** Task is looking for a scraper that can execute it. */
   Waiting = 'WAITING'
 }
 
