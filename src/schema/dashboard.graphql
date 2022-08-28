@@ -1,0 +1,24 @@
+# query Dashboard($begin: DateTime!, $end: DateTime!, $groups: [String!]!) {
+query Dashboard {
+  # rangeEvents(begin: $begin, end: $end, groups: $groups) {
+  #   begin
+  #   code
+  #   room
+  #   type
+  # }
+  me {
+    name
+    email
+  }
+}
+
+query QuickPeek($begin: DateTime!, $end: DateTime!, $rangeEventsGroups2: [String!]) {
+  me {
+    name
+    email
+  }
+  rangeEvents(begin: $begin, end: $end, groups: $rangeEventsGroups2) {
+    begin
+    code
+  }
+}

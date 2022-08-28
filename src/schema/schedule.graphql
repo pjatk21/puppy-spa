@@ -1,0 +1,11 @@
+query RangeEvents($begin: DateTime!, $end: DateTime!, $groups: [String!]) {
+  rangeEvents(begin: $begin, end: $end, groups: $groups) {
+    begin
+    end
+    title
+    code
+    hosts
+    room
+    type
+  }
+}

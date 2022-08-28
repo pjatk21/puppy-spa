@@ -1,4 +1,6 @@
-import { useQuery, useMutation, UseQueryOptions, UseMutationOptions } from '@tanstack/react-query';
+/* eslint-disable */
+
+import { useQuery, useInfiniteQuery, useMutation, UseQueryOptions, UseInfiniteQueryOptions, UseMutationOptions } from '@tanstack/react-query';
 import { kyFetcher } from 'src/http';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
@@ -12,7 +14,7 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
-  DateTime: any;
+  DateTime: string;
 };
 
 export type App = {
@@ -207,12 +209,35 @@ export type AppQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type AppQuery = { __typename?: 'Query', app: { __typename?: 'App', version: string } };
 
+export type DashboardQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type DashboardQuery = { __typename?: 'Query', me: { __typename?: 'User', name: string, email: string } };
+
+export type QuickPeekQueryVariables = Exact<{
+  begin: Scalars['DateTime'];
+  end: Scalars['DateTime'];
+  rangeEventsGroups2?: InputMaybe<Array<Scalars['String']> | Scalars['String']>;
+}>;
+
+
+export type QuickPeekQuery = { __typename?: 'Query', me: { __typename?: 'User', name: string, email: string }, rangeEvents: Array<{ __typename?: 'ScheduledEvent', begin: string, code: string }> };
+
 export type LoginGoogleMutationVariables = Exact<{
   code: Scalars['String'];
 }>;
 
 
 export type LoginGoogleMutation = { __typename?: 'Mutation', oauth2: { __typename?: 'OAuth2', google: { __typename?: 'Session', token: string } } };
+
+export type RangeEventsQueryVariables = Exact<{
+  begin: Scalars['DateTime'];
+  end: Scalars['DateTime'];
+  groups?: InputMaybe<Array<Scalars['String']> | Scalars['String']>;
+}>;
+
+
+export type RangeEventsQuery = { __typename?: 'Query', rangeEvents: Array<{ __typename?: 'ScheduledEvent', begin: string, end: string, title: string, code: string, hosts: Array<string>, room: string, type: EventType }> };
 
 export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -246,6 +271,92 @@ export const useAppQuery = <
       kyFetcher<AppQuery, AppQueryVariables>(AppDocument, variables),
       options
     );
+export const useInfiniteAppQuery = <
+      TData = AppQuery,
+      TError = unknown
+    >(
+      variables?: AppQueryVariables,
+      options?: UseInfiniteQueryOptions<AppQuery, TError, TData>
+    ) =>{
+    
+    return useInfiniteQuery<AppQuery, TError, TData>(
+      variables === undefined ? ['App.infinite'] : ['App.infinite', variables],
+      (metaData) => kyFetcher<AppQuery, AppQueryVariables>(AppDocument, {...variables, ...(metaData.pageParam ?? {})})(),
+      options
+    )};
+
+export const DashboardDocument = `
+    query Dashboard {
+  me {
+    name
+    email
+  }
+}
+    `;
+export const useDashboardQuery = <
+      TData = DashboardQuery,
+      TError = unknown
+    >(
+      variables?: DashboardQueryVariables,
+      options?: UseQueryOptions<DashboardQuery, TError, TData>
+    ) =>
+    useQuery<DashboardQuery, TError, TData>(
+      variables === undefined ? ['Dashboard'] : ['Dashboard', variables],
+      kyFetcher<DashboardQuery, DashboardQueryVariables>(DashboardDocument, variables),
+      options
+    );
+export const useInfiniteDashboardQuery = <
+      TData = DashboardQuery,
+      TError = unknown
+    >(
+      variables?: DashboardQueryVariables,
+      options?: UseInfiniteQueryOptions<DashboardQuery, TError, TData>
+    ) =>{
+    
+    return useInfiniteQuery<DashboardQuery, TError, TData>(
+      variables === undefined ? ['Dashboard.infinite'] : ['Dashboard.infinite', variables],
+      (metaData) => kyFetcher<DashboardQuery, DashboardQueryVariables>(DashboardDocument, {...variables, ...(metaData.pageParam ?? {})})(),
+      options
+    )};
+
+export const QuickPeekDocument = `
+    query QuickPeek($begin: DateTime!, $end: DateTime!, $rangeEventsGroups2: [String!]) {
+  me {
+    name
+    email
+  }
+  rangeEvents(begin: $begin, end: $end, groups: $rangeEventsGroups2) {
+    begin
+    code
+  }
+}
+    `;
+export const useQuickPeekQuery = <
+      TData = QuickPeekQuery,
+      TError = unknown
+    >(
+      variables: QuickPeekQueryVariables,
+      options?: UseQueryOptions<QuickPeekQuery, TError, TData>
+    ) =>
+    useQuery<QuickPeekQuery, TError, TData>(
+      ['QuickPeek', variables],
+      kyFetcher<QuickPeekQuery, QuickPeekQueryVariables>(QuickPeekDocument, variables),
+      options
+    );
+export const useInfiniteQuickPeekQuery = <
+      TData = QuickPeekQuery,
+      TError = unknown
+    >(
+      variables: QuickPeekQueryVariables,
+      options?: UseInfiniteQueryOptions<QuickPeekQuery, TError, TData>
+    ) =>{
+    
+    return useInfiniteQuery<QuickPeekQuery, TError, TData>(
+      ['QuickPeek.infinite', variables],
+      (metaData) => kyFetcher<QuickPeekQuery, QuickPeekQueryVariables>(QuickPeekDocument, {...variables, ...(metaData.pageParam ?? {})})(),
+      options
+    )};
+
 export const LoginGoogleDocument = `
     mutation LoginGoogle($code: String!) {
   oauth2 {
@@ -264,6 +375,45 @@ export const useLoginGoogleMutation = <
       (variables?: LoginGoogleMutationVariables) => kyFetcher<LoginGoogleMutation, LoginGoogleMutationVariables>(LoginGoogleDocument, variables)(),
       options
     );
+export const RangeEventsDocument = `
+    query RangeEvents($begin: DateTime!, $end: DateTime!, $groups: [String!]) {
+  rangeEvents(begin: $begin, end: $end, groups: $groups) {
+    begin
+    end
+    title
+    code
+    hosts
+    room
+    type
+  }
+}
+    `;
+export const useRangeEventsQuery = <
+      TData = RangeEventsQuery,
+      TError = unknown
+    >(
+      variables: RangeEventsQueryVariables,
+      options?: UseQueryOptions<RangeEventsQuery, TError, TData>
+    ) =>
+    useQuery<RangeEventsQuery, TError, TData>(
+      ['RangeEvents', variables],
+      kyFetcher<RangeEventsQuery, RangeEventsQueryVariables>(RangeEventsDocument, variables),
+      options
+    );
+export const useInfiniteRangeEventsQuery = <
+      TData = RangeEventsQuery,
+      TError = unknown
+    >(
+      variables: RangeEventsQueryVariables,
+      options?: UseInfiniteQueryOptions<RangeEventsQuery, TError, TData>
+    ) =>{
+    
+    return useInfiniteQuery<RangeEventsQuery, TError, TData>(
+      ['RangeEvents.infinite', variables],
+      (metaData) => kyFetcher<RangeEventsQuery, RangeEventsQueryVariables>(RangeEventsDocument, {...variables, ...(metaData.pageParam ?? {})})(),
+      options
+    )};
+
 export const MeDocument = `
     query Me {
   me {
@@ -285,6 +435,20 @@ export const useMeQuery = <
       kyFetcher<MeQuery, MeQueryVariables>(MeDocument, variables),
       options
     );
+export const useInfiniteMeQuery = <
+      TData = MeQuery,
+      TError = unknown
+    >(
+      variables?: MeQueryVariables,
+      options?: UseInfiniteQueryOptions<MeQuery, TError, TData>
+    ) =>{
+    
+    return useInfiniteQuery<MeQuery, TError, TData>(
+      variables === undefined ? ['Me.infinite'] : ['Me.infinite', variables],
+      (metaData) => kyFetcher<MeQuery, MeQueryVariables>(MeDocument, {...variables, ...(metaData.pageParam ?? {})})(),
+      options
+    )};
+
 export const SetGroupsDocument = `
     mutation SetGroups($groups: [String!]!) {
   setGroups(groups: $groups)
