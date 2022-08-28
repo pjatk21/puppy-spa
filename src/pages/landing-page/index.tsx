@@ -1,4 +1,5 @@
 import { Alert, Button, Spinner } from 'flowbite-react'
+import { Link } from 'react-router-dom'
 import { AboutApp } from 'src/components/about'
 
 function HeadBranding() {
@@ -13,9 +14,9 @@ function HeadBranding() {
       <p>Plan zajęć który to pilnuje Ciebie</p>
 
       <div className="flex flex-wrap flex-row gap-2 justify-center">
-        <Button href="/schedule">
+        <Link to="/schedule">
           <span className="min-w-[3rem]">Aplikacja</span>
-        </Button>
+        </Link>
         <Button href="/graphql">
           <span className="min-w-[3rem]">GraphQL</span>
         </Button>
