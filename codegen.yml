@@ -14,6 +14,9 @@ generates:
       fetcher:
         func: "src/http#kyFetcher"
         isReactHook: false
+      scalars:
+        DateTime: "string"
+      addInfiniteQuery: true
 
   ./graphql.schema.json:
     plugins:
