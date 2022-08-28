@@ -56,10 +56,7 @@ export function ScheduleClasses() {
   const dayNo = 9
   const [ref, inView, entry] = useInView()
 
-  const currentDate = useMemo(
-    () => DateTime.now().plus({ months: 1, days: 10 }).startOf('day'),
-    []
-  )
+  const currentDate = useMemo(() => DateTime.now().startOf('day'), [])
   const begin = currentDate
   const end = currentDate.plus({ days: dayNo })
   const scheduleQuery = useInfiniteRangeEventsQuery(
