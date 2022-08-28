@@ -1,29 +1,10 @@
-import { useMutation, useQuery, UseMutationOptions, UseQueryOptions } from '@tanstack/react-query';
+import { useQuery, useMutation, UseQueryOptions, UseMutationOptions } from '@tanstack/react-query';
+import { kyFetcher } from 'src/http';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
-
-function fetcher<TData, TVariables>(query: string, variables?: TVariables) {
-  return async (): Promise<TData> => {
-    const res = await fetch("https://puppy.kpostek.dev/graphql", {
-    method: "POST",
-    ...({"headers":{"Content-Type":"application/json; charset=utf-8"}}),
-      body: JSON.stringify({ query, variables }),
-    });
-
-    const json = await res.json();
-
-    if (json.errors) {
-      const { message } = json.errors[0];
-
-      throw new Error(message);
-    }
-
-    return json.data;
-  }
-}
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -32,6 +13,11 @@ export type Scalars = {
   Int: number;
   Float: number;
   DateTime: any;
+};
+
+export type App = {
+  __typename?: 'App';
+  version: Scalars['String'];
 };
 
 export enum EventType {
@@ -113,6 +99,7 @@ export type Query = {
   __typename?: 'Query';
   allEvents: Array<ScheduledEvent>;
   allPuppies: Array<Puppy>;
+  app: App;
   availableGroups: Array<Scalars['String']>;
   availableHosts: Array<Scalars['String']>;
   me: User;
@@ -215,6 +202,11 @@ export type User = {
   scrapers: Array<Scraper>;
 };
 
+export type AppQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type AppQuery = { __typename?: 'Query', app: { __typename?: 'App', version: string } };
+
 export type LoginGoogleMutationVariables = Exact<{
   code: Scalars['String'];
 }>;
@@ -235,6 +227,25 @@ export type SetGroupsMutationVariables = Exact<{
 export type SetGroupsMutation = { __typename?: 'Mutation', setGroups: Array<string> };
 
 
+export const AppDocument = `
+    query App {
+  app {
+    version
+  }
+}
+    `;
+export const useAppQuery = <
+      TData = AppQuery,
+      TError = unknown
+    >(
+      variables?: AppQueryVariables,
+      options?: UseQueryOptions<AppQuery, TError, TData>
+    ) =>
+    useQuery<AppQuery, TError, TData>(
+      variables === undefined ? ['App'] : ['App', variables],
+      kyFetcher<AppQuery, AppQueryVariables>(AppDocument, variables),
+      options
+    );
 export const LoginGoogleDocument = `
     mutation LoginGoogle($code: String!) {
   oauth2 {
@@ -250,7 +261,7 @@ export const useLoginGoogleMutation = <
     >(options?: UseMutationOptions<LoginGoogleMutation, TError, LoginGoogleMutationVariables, TContext>) =>
     useMutation<LoginGoogleMutation, TError, LoginGoogleMutationVariables, TContext>(
       ['LoginGoogle'],
-      (variables?: LoginGoogleMutationVariables) => fetcher<LoginGoogleMutation, LoginGoogleMutationVariables>(LoginGoogleDocument, variables)(),
+      (variables?: LoginGoogleMutationVariables) => kyFetcher<LoginGoogleMutation, LoginGoogleMutationVariables>(LoginGoogleDocument, variables)(),
       options
     );
 export const MeDocument = `
@@ -271,7 +282,7 @@ export const useMeQuery = <
     ) =>
     useQuery<MeQuery, TError, TData>(
       variables === undefined ? ['Me'] : ['Me', variables],
-      fetcher<MeQuery, MeQueryVariables>(MeDocument, variables),
+      kyFetcher<MeQuery, MeQueryVariables>(MeDocument, variables),
       options
     );
 export const SetGroupsDocument = `
@@ -285,6 +296,6 @@ export const useSetGroupsMutation = <
     >(options?: UseMutationOptions<SetGroupsMutation, TError, SetGroupsMutationVariables, TContext>) =>
     useMutation<SetGroupsMutation, TError, SetGroupsMutationVariables, TContext>(
       ['SetGroups'],
-      (variables?: SetGroupsMutationVariables) => fetcher<SetGroupsMutation, SetGroupsMutationVariables>(SetGroupsDocument, variables)(),
+      (variables?: SetGroupsMutationVariables) => kyFetcher<SetGroupsMutation, SetGroupsMutationVariables>(SetGroupsDocument, variables)(),
       options
     );

@@ -9,10 +9,8 @@ generates:
       - "typescript-react-query"
     config:
       fetcher:
-        endpoint: ${CG_GRAPHQL_URL:https://puppy.kpostek.dev/graphql}
-        fetchParams:
-          headers:
-            Content-Type: application/json; charset=utf-8
+        func: "src/http#kyFetcher"
+        isReactHook: false
 
   ./graphql.schema.json:
     plugins:
