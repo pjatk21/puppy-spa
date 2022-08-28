@@ -1,6 +1,5 @@
 import { Alert, Button, Spinner } from 'flowbite-react'
 import { AboutApp } from 'src/components/about'
-import { LoginButton } from 'src/components/login-btn'
 
 function HeadBranding() {
   return (
@@ -14,13 +13,12 @@ function HeadBranding() {
       <p>Plan zajęć który to pilnuje Ciebie</p>
 
       <div className="flex flex-wrap flex-row gap-2 justify-center">
-        <Button href="/app">
+        <Button href="/schedule">
           <span className="min-w-[3rem]">Aplikacja</span>
         </Button>
         <Button href="/graphql">
           <span className="min-w-[3rem]">GraphQL</span>
         </Button>
-        <LoginButton />
       </div>
       <div className="mx-auto">
         <Alert color={'warning'}>
@@ -63,7 +61,7 @@ function Footer() {
 
 export function Landing() {
   return (
-    <div className="dark:bg-slate-800 bg-slate-200 w-full min-h-screen px-20 dark:text-white text-slate-900">
+    <div className="dark:bg-slate-800 bg-slate-100 w-full min-h-screen px-20 dark:text-white text-slate-900">
       <HeadBranding />
       <Footer />
     </div>
