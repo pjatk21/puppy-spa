@@ -9,7 +9,7 @@ export function RequireAuthenticated() {
     const redirectParams = new URLSearchParams()
     if (location.pathname !== '/login') {
       redirectParams.set('redirect', location.pathname)
-      return <Navigate to={'/login' + redirectParams.toString()} />
+      return <Navigate to={'/login?' + redirectParams.toString()} />
     }
     return <Navigate to="/login" />
   }
