@@ -1,3 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.link {
+  @apply hover:underline underline-offset-4 dark:hover:text-sky-300 hover:text-sky-900;
+}
