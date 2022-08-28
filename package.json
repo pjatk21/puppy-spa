@@ -25,6 +25,7 @@
     "zustand": "^4.1.1"
   },
   "devDependencies": {
+    "@graphql-codegen/add": "^3.2.1",
     "@graphql-codegen/cli": "2.11.7",
     "@graphql-codegen/introspection": "2.2.1",
     "@graphql-codegen/typescript": "^2.7.3",
