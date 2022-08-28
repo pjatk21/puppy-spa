@@ -4,6 +4,9 @@ documents: "src/**/*.graphql"
 generates:
   src/_autogen/graphql.ts:
     plugins:
+      - add:
+          content: |
+            /* eslint-disable */
       - "typescript"
       - "typescript-operations"
       - "typescript-react-query"
