@@ -3,62 +3,18 @@ import {
   ScheduledEvent,
   useInfiniteRangeEventsQuery,
 } from '@codegen/graphql'
-import { Button, Card, Spinner } from 'flowbite-react'
+import { Alert, Button, Card, Spinner } from 'flowbite-react'
 import { DateTime } from 'luxon'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useInView } from 'react-intersection-observer'
-
-type ClassesEntryCardProps = {
-  event: ScheduledEvent
-}
-
-function EventCard(props: ClassesEntryCardProps) {
-  const begin = DateTime.fromISO(props.event.begin)
-  const end = DateTime.fromISO(props.event.begin)
-
-  return (
-    <Card>
-      <div>
-        <h5 className="font-mono text-lg font-bold">{props.event.code}</h5>
-        <p>{props.event.title}</p>
-        <p>
-          {begin.toLocaleString(DateTime.TIME_24_SIMPLE)} -{' '}
-          {end.toLocaleString(DateTime.TIME_24_SIMPLE)}
-        </p>
-        <p>{props.event.room}</p>
-      </div>
-    </Card>
-  )
-}
-
-type EventsDayProps = {
-  date: DateTime
-  events: ScheduledEvent[]
-}
-
-function EventsDay(props: EventsDayProps) {
-  return (
-    <div>
-      <h3 className="text-xl font-bold">
-        {props.date.toFormat('dd MMM, EEEE')}
-      </h3>
-      <div className="flex flex-col gap-2">
-        {props.events.length === 0 && <p>Brak zajęć tego dnia.</p>}
-        {props.events.map((event, i) => (
-          <EventCard key={i} event={event} />
-        ))}
-      </div>
-    </div>
-  )
-}
+import { DateMandatoryEvent, Groupper } from './group'
 
 export function ScheduleClasses() {
-  const dayNo = 9
-  const [ref, inView, entry] = useInView()
+  const [ref, inView] = useInView()
 
-  const currentDate = useMemo(() => DateTime.now().startOf('day'), [])
-  const begin = currentDate
-  const end = currentDate.plus({ days: dayNo })
+  const currentDate = useMemo(() => DateTime.now(), [])
+  const begin = currentDate.startOf('month')
+  const end = currentDate.endOf('month')
   const scheduleQuery = useInfiniteRangeEventsQuery(
     {
       begin: begin.toISO(),
@@ -68,72 +24,113 @@ export function ScheduleClasses() {
     {
       getNextPageParam(lastPage, allPages) {
         return {
-          begin: begin.plus({ day: dayNo * allPages.length }).toISO(),
-          end: end.plus({ day: dayNo * allPages.length }).toISO(),
+          begin: begin.plus({ month: allPages.length }).toISO(),
+          end: end.plus({ month: allPages.length }).toISO(),
         }
       },
     }
   )
 
+  const eventGroupper = useMemo(() => {
+    const events =
+      scheduleQuery.data?.pages.reduce(
+        (pv, cv) => pv.concat(cv.rangeEvents),
+        [] as DateMandatoryEvent[]
+      ) || []
+    const groupper = new Groupper({
+      startingDay: begin,
+      endingDay: end
+        .plus({
+          months: scheduleQuery.data ? scheduleQuery.data.pages.length - 1 : 0,
+        })
+        .endOf('month'),
+    })
+    groupper.setEvents(events)
+    return groupper
+  }, [scheduleQuery.data])
+
+  const lockMorePages = useMemo(
+    () => (scheduleQuery.data?.pages.length ?? 0) > 2,
+    [scheduleQuery.data]
+  )
+
   useEffect(() => {
-    console.log(inView, entry)
-    if (inView) {
-      scheduleQuery.fetchNextPage()
-    }
+    if (inView && !lockMorePages) scheduleQuery.fetchNextPage()
   }, [inView])
 
-  const numberOfDays = (scheduleQuery.data?.pages.length ?? 0) * dayNo
-
-  // group events by date
-  const eventsByDate = useMemo(() => {
-    const eventsMap = new Map<DateTime, RangeEventsQuery['rangeEvents']>()
-
-    if (!scheduleQuery.data) return eventsMap
-    const events = scheduleQuery.data.pages.reduce(
-      (pv, cv) => pv.concat(cv.rangeEvents),
-      [] as typeof scheduleQuery.data.pages[0]['rangeEvents']
-    )
-
-    // poulate dates
-    for (const index of [...Array(numberOfDays).keys()]) {
-      eventsMap.set(currentDate.plus({ day: index }), [])
-    }
-
-    for (const startDate of eventsMap.keys()) {
-      const endDate = startDate.endOf('day')
-      eventsMap.set(
-        startDate,
-        events.filter((ev) => {
-          const evDate = DateTime.fromISO(ev.begin)
-          return evDate >= startDate && evDate < endDate
-        })
-      )
-    }
-
-    return eventsMap
-  }, [scheduleQuery.data])
+  const availableMonths = useMemo(
+    () => eventGroupper.getAvailableMonths(),
+    [scheduleQuery.data]
+  )
 
   if (!scheduleQuery.data) return <Spinner />
 
   return (
-    <>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
-        {Array.from(eventsByDate.entries()).map(
-          ({ '0': date, '1': events }) => (
-            <EventsDay
-              key={date.toISODate()}
-              date={date}
-              events={events as ScheduledEvent[]}
-            />
-          )
-        )}
-      </div>
-      <div ref={ref} className="h-[40px]" />
-      <div>
-        <Button onClick={() => scheduleQuery.fetchNextPage()}>
-          Załaduj więcej
-        </Button>
-      </div>
-    </>
+    <div className="relative">
+      <h1 className="text-3xl font-bold">Plan zajęć</h1>
+      {availableMonths.map((monthDate, index) => {
+        const isLast = index === availableMonths.length - 1
+        const isFirst = index === 0
+        const monthGroupped = eventGroupper.getGrouppedMonth(
+          monthDate.year,
+          monthDate.month
+        )
+
+        const monthLabel = monthDate.toLocaleString({
+          month: 'long',
+          year: 'numeric',
+        })
+
+        const offset = monthGroupped.calendarStartOffset
+
+        return (
+          <div>
+            <h2 className="mt-6 mb-2 font-bold text-2xl">{monthLabel}</h2>
+            <div className="grid lg:grid-cols-7 md:grid-cols-4 sm:grid-cols-2 grid-cols-1 gap-6">
+              {Array.from({ length: offset }).map(() => (
+                <div className="hidden lg:block" />
+              ))}
+              {Array.from(monthGroupped.days.entries())
+                .filter(([dayDate]) => {
+                  if (!isFirst) return true
+                  return DateTime.now().startOf('week') <= dayDate
+                })
+                .map(([day, events]) => (
+                  <div className="border border-slate-500 rounded-lg dark:bg-gray-800 bg-gray-100 divide-y divide-slate-500 shadow-xl md:h-48">
+                    <h3 className="p-2 text-lg text-right font-semibold">
+                      <span className="text-xs">{day.toFormat('EEE')}</span>{' '}
+                      {day.toFormat('dd')}
+                    </h3>
+                    <div className="p-2">
+                      {events.length ? (
+                        events.map((event) => <h4>{event.code}</h4>)
+                      ) : (
+                        <h4 className="italic opacity-40">
+                          Brak zajęć tego dnia
+                        </h4>
+                      )}
+                    </div>
+                  </div>
+                ))}
+            </div>
+          </div>
+        )
+      })}
+      <div ref={ref} className="h-5" />
+      {lockMorePages && (
+        <div className="my-4">
+          <Alert color={'failure'}>
+            Ze względu na problemy z optymalizacją, został wprowadzony limit.
+          </Alert>
+        </div>
+      )}
+      <Button
+        onClick={() => scheduleQuery.fetchNextPage()}
+        disabled={scheduleQuery.isFetching || lockMorePages}
+      >
+        Załaduj więcej{' '}
+        {scheduleQuery.isFetching && <Spinner size={'sm'} light />}
+      </Button>
+    </div>
   )
 }
