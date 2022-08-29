@@ -69,7 +69,6 @@ export function ScheduleClasses() {
     <div className="relative">
       <h1 className="text-3xl font-bold">Plan zajęć</h1>
       {availableMonths.map((monthDate, index) => {
-        const isLast = index === availableMonths.length - 1
         const isFirst = index === 0
         const monthGroupped = eventGroupper.getGrouppedMonth(
           monthDate.year,
@@ -96,14 +95,35 @@ export function ScheduleClasses() {
                   return DateTime.now().startOf('week') <= dayDate
                 })
                 .map(([day, events]) => (
-                  <div className="border border-slate-500 rounded-lg dark:bg-gray-800 bg-gray-100 divide-y divide-slate-500 shadow-xl md:h-48">
+                  <div className="border border-slate-500 rounded-lg dark:bg-gray-800 bg-gray-100 divide-y divide-slate-500 shadow-xl md:h-72">
                     <h3 className="p-2 text-lg text-right font-semibold">
                       <span className="text-xs">{day.toFormat('EEE')}</span>{' '}
-                      {day.toFormat('dd')}
+                      {DateTime.now().startOf('day').equals(day) ? (
+                        <span
+                          className={'border-2 border-red-700 rounded-md p-1 '}
+                        >
+                          {day.toFormat('dd')}
+                        </span>
+                      ) : (
+                        <span>{day.toFormat('dd')}</span>
+                      )}
                     </h3>
                     <div className="p-2">
                       {events.length ? (
-                        events.map((event) => <h4>{event.code}</h4>)
+                        events.map((event) => (
+                          <div>
+                            <h4>{event.code}</h4>
+                            <p className="text-xs">
+                              {DateTime.fromISO(event.begin).toLocaleString(
+                                DateTime.TIME_24_SIMPLE
+                              )}{' '}
+                              -{' '}
+                              {DateTime.fromISO(event.end).toLocaleString(
+                                DateTime.TIME_24_SIMPLE
+                              )}
+                            </p>
+                          </div>
+                        ))
                       ) : (
                         <h4 className="italic opacity-40">
                           Brak zajęć tego dnia
