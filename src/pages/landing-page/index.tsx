@@ -26,7 +26,7 @@ function HeadBranding() {
       <div className="mx-auto">
         <Alert color={'warning'}>
           🚧 <b>Uwaga!</b> To jest wciąż wersja poglądowa. Część funkcji nie
-          będzie działać poprawnie. 🚧
+          będzie działać poprawnie (a nawet część brzydko). 🚧
         </Alert>
       </div>
     </div>
