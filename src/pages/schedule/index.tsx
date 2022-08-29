@@ -29,8 +29,8 @@ function NavAppLink(props: NavAppLinkProps) {
 
 export function ScheduleApp() {
   return (
-    <div className="min-h-screen dark:bg-slate-800 bg-slate-100">
-      <div className="shadow-lg dark:shadow-red">
+    <div className="h-screen dark:bg-slate-800 bg-slate-100 flex flex-col">
+      <div className="border-b border-slate-500 shadow-lg">
         <Navbar fluid={true} rounded={false}>
           <Navbar.Brand>
             <span className="dark:text-white text-slate-900">🐶 Puppy</span>
@@ -44,8 +44,8 @@ export function ScheduleApp() {
           </Navbar.Collapse>
         </Navbar>
       </div>
-      <div className="dark:text-white text-slate-900">
-        <div className="lg:mx-auto mx-10 max-w-5xl py-8 min-h-full">
+      <div className="dark:text-white text-slate-900 flex-grow overflow-y-auto">
+        <div className="lg:mx-auto mx-10 max-w-5xl py-8 overflow-y-auto relative">
           <Outlet />
         </div>
       </div>
