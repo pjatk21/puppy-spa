@@ -29,7 +29,6 @@ export function ScheduleDashboard() {
   )
   const { logout } = useAppState()
 
-  console.log(qpQuery.data)
 
   if (!qpQuery.data) {
     return <Spinner />

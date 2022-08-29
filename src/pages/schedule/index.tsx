@@ -45,7 +45,7 @@ export function ScheduleApp() {
         </Navbar>
       </div>
       <div className="dark:text-white text-slate-900">
-        <div className="mx-auto max-w-5xl py-8 min-h-full">
+        <div className="lg:mx-auto mx-10 max-w-5xl py-8 min-h-full">
           <Outlet />
         </div>
       </div>
