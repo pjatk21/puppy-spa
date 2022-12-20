@@ -1,11 +1,11 @@
 import { useLoginGoogleMutation, useMeQuery } from '@codegen/graphql'
 import { useGoogleLogin } from '@react-oauth/google'
-import { Button, Spinner, Toast } from 'flowbite-react'
 import { useState } from 'react'
 import { useTimeout } from 'usehooks-ts'
-import { ClipboardIcon, CheckCircleIcon } from '@heroicons/react/20/solid/'
 import { Transition } from '@headlessui/react'
 import { useAppState } from 'src/store'
+import { LoadingSpinning } from 'src/ui/LoadingSpinning'
+import 'src/ui/button.sass'
 
 export function LoginButton() {
   const setToken = useAppState((state) => state.setToken)
@@ -38,47 +38,30 @@ export function LoginButton() {
 
   if (authToken) {
     meQuery.refetch()
-    if (meQuery.isLoading)
-      return (
-        <Button>
-          <Spinner light />
-        </Button>
-      )
+    if (meQuery.isLoading) return <LoadingSpinning />
     if (meQuery.error || !meQuery.data) {
-      return <Button color={'failure'}>error!</Button>
+      return <button className="button bg-red-500">error!</button>
     }
-    return (
-      <Button color={'success'} disabled={true}>
-        Zalogowany jako {meQuery.data.me.name}
-      </Button>
-    )
+    return null
   }
 
   if (loginMutation.data) {
     setToken(loginMutation.data.oauth2.google.token)
-    return (
-      <Button onClick={clickHandle} color={'success'}>
-        <div className="h-5 w-5 mr-3">
-          <ClipboardIcon />
-        </div>
-        {copied ? 'Skopiowano :D' : 'Skopiuj token'}
-      </Button>
-    )
+    return null
   }
 
   return (
-    <Button
+    <button
+      className="button"
       onClick={() => {
         login()
         setLoginPending(true)
       }}
     >
-      {loginPending && (
-        <div className="mr-3">
-          <Spinner light size={'sm'} />
-        </div>
-      )}
-      Zaloguj się
-    </Button>
+      <div className="flex justify-center gap-2 items-center">
+        {loginPending && <LoadingSpinning />}
+        Zaloguj się
+      </div>
+    </button>
   )
 }

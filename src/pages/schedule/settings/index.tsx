@@ -1,4 +1,3 @@
-import { Card, Sidebar } from 'flowbite-react'
 import { Link, Outlet, useLocation } from 'react-router-dom'
 import {
   AdjustmentsVerticalIcon,

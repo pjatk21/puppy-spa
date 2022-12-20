@@ -7,7 +7,10 @@ export default defineConfig({
   plugins: [react(), tsConfigPaths()],
   server: {
     proxy: {
-      '/graphql': 'http://localhost:3000/graphql',
+      '/graphql': {
+        target: 'http://localhost:3000/graphql',
+        prependPath: false,
+      },
     },
   },
 })

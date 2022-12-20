@@ -1,76 +1,34 @@
 import { useDashboardQuery, useQuickPeekQuery } from '@codegen/graphql'
-import { Button, Card, Spinner } from 'flowbite-react'
 import { DateTime } from 'luxon'
 import { Link } from 'react-router-dom'
 import { useAppState } from 'src/store'
 
-type DashboardCardProps = {
+type CardProps = {
   children: React.ReactNode
+  title: string
 }
 
-export function DashboardCard(props: DashboardCardProps) {
+function Card(props: CardProps) {
   return (
-    <Card>
-      <div className="flex flex-col justify-start min-h-[8rem] h-full">
-        {props.children}
-      </div>
-    </Card>
+    <div className="bg-slate-800 border border-slate-500 rounded flex flex-col gap-2 p-4 text-white overflow-hidden drop-shadow-lg text-ellipsis select-none">
+      <h3 className="text-[16pt] font-extrabold">{props.title}</h3>
+      <div className="w-full">{props.children}</div>
+    </div>
   )
 }
 
 export function ScheduleDashboard() {
-  const qpQuery = useQuickPeekQuery(
-    {
-      begin: DateTime.now().startOf('day').toISODate(),
-      end: DateTime.now().startOf('day').plus({ month: 2 }).toISODate(),
-      rangeEventsGroups2: ['WIs I.3 - 1w'],
-    },
-    { enabled: true }
-  )
-  const { logout } = useAppState()
-
-
-  if (!qpQuery.data) {
-    return <Spinner />
-  }
-
-  const {
-    me: { name, email },
-    rangeEvents,
-  } = qpQuery.data
-
   return (
-    <div className="grid gap-2 grid-flow-row md:grid-cols-3 sm:grid-cols-1">
-      <DashboardCard>
-        <h5 className="text-xl font-bold">Cześć, {name}!</h5>
-        <p>{email}</p>
-        <div className="flex-grow" />
-        <Button
-          onClick={() => {
-            logout()
-          }}
-        >
-          Wyloguj się
-        </Button>
-      </DashboardCard>
-      <DashboardCard>
-        <h5 className="text-xl font-bold">Najbliższe 3 zajęcia.</h5>
-        {rangeEvents.slice(0, 3).map(({ code, begin }) => {
-          const relative = DateTime.fromISO(begin).toRelativeCalendar()
-          const time = DateTime.fromISO(begin).toLocaleString({
-            timeStyle: 'short',
-          })
-          return (
-            <p className="my-1">
-              {code} {relative} o {time}
-            </p>
-          )
-        })}
-        <div className="flex-grow" />
-        <Link to="/schedule/classes">
-          <Button>Zobacz wszystkie zajęcia</Button>{' '}
-        </Link>
-      </DashboardCard>
-    </div>
+    <>
+      <p className="text-white font-serif italic text-[36pt] mb-4">Kokpit</p>
+      <div className="grid gap-2 grid-flow-row md:grid-cols-3 sm:grid-cols-1">
+        <Card title="Następne zajęcia">
+          <p className="italic">brak nadchodzących zajęć</p>
+        </Card>
+        <Card title="Następne kolokwia">
+          <p className="italic">brak nadochodzących kolokwiów</p>
+        </Card>
+      </div>
+    </>
   )
 }

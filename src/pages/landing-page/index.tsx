@@ -1,13 +1,24 @@
-import { Alert, Button, Spinner } from 'flowbite-react'
 import { Link } from 'react-router-dom'
 import { AboutApp } from 'src/components/about'
+import 'src/ui/button.sass'
+import 'src/ui/alert.sass'
+import { LoadingSpinning } from 'src/ui/LoadingSpinning'
 
 function HeadBranding() {
   return (
     <div className="flex flex-col text-center gap-[20px] min-h-screen justify-center">
       <span className="text-[96pt]">🐶</span>
       <div>
-        <h1 className="text-5xl font-bold">Puppy</h1>
+        <h1
+          className="font-serif italic"
+          style={{
+            fontSize: '54pt',
+            fontWeight: 800,
+            letterSpacing: '2px',
+          }}
+        >
+          Puppy
+        </h1>
         <AboutApp />
       </div>
 
@@ -15,19 +26,21 @@ function HeadBranding() {
 
       <div className="flex flex-wrap flex-row gap-2 justify-center">
         <Link to="/schedule">
-          <Button>
+          <button className="button">
             <span className="min-w-[3rem]">Aplikacja</span>
-          </Button>
+          </button>
         </Link>
-        <Button href="/graphql">
-          <span className="min-w-[3rem]">GraphQL</span>
-        </Button>
+        <a href="/graphql">
+          <button className="button">
+            <span className="min-w-[3rem]">GraphQL</span>
+          </button>
+        </a>
       </div>
       <div className="mx-auto">
-        <Alert color={'warning'}>
+        <div className="alert">
           🚧 <b>Uwaga!</b> To jest wciąż wersja poglądowa. Część funkcji nie
           będzie działać poprawnie (a nawet część brzydko). 🚧
-        </Alert>
+        </div>
       </div>
     </div>
   )

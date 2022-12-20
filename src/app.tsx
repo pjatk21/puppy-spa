@@ -32,13 +32,6 @@ function App() {
               <Route path="/schedule" element={<ScheduleApp />}>
                 <Route path="" element={<ScheduleDashboard />} />
                 <Route path="classes" element={<ScheduleClasses />} />
-                <Route path="tests" element={'kolokwia'} />
-                <Route path="settings" element={<Settings />}>
-                  <Route path="" element={'general'} />
-                  <Route path="notifications" element={'notifications'} />
-                  <Route path="scrapers" element={'scrapers'} />
-                </Route>
-                <Route path="*" element={<Navigate to={'/schedule'} />} />
               </Route>
             </Route>
 
